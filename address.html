@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Secret Address — Geo Tag</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 80px 16px;
+      color: #222;
+    }
+    h1 { color: #1a8a1a; margin-bottom: 0.25rem; }
+    p { margin: 0.25rem 0; }
+    .geo-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #f3f7f3;
+      border: 1px solid #d6e6d6;
+      cursor: pointer;
+      text-decoration: none;
+      color: #0b5a8a;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    .geo-tag:hover { background: #e9f3ea; }
+    .pin {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .small {
+      display: block;
+      font-weight: 400;
+      font-size: 0.9rem;
+      color: #444;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Congratulations!</h1>
+  <p>You solved the twisting maze without hitting the walls.</p>
+  <p>The secret location is:</p>
+
+  <!-- Clickable geo tag: opens Google Maps (desktop) and attempts geo: URI on mobile -->
+  <a id="geoLink" class="geo-tag" href="#" rel="noopener" target="_blank" aria-label="Open Seth Jeejeebhoy Dadabhoy Agiary in Google Maps">
+    <span class="pin">📍</span>
+    <span>
+      Seth Jeejeebhoy Dadabhoy Agiary<br>
+      <span class="small">Afghan Church, Pilot Bunder Road, Colaba, Mumbai-400005</span>
+    </span>
+  </a>
+
+  <script>
+    (function () {
+      // The address to open in maps
+      const address = 'Seth Jeejeebhoy Dadabhoy Agiary, Afghan Church, Pilot Bunder Road, Colaba, Mumbai-400005';
+
+      // Google Maps web URL (works on desktop and mobile)
+      const mapsWebUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address);
+
+      // geo: URI (mobile devices / native maps apps)
+      const geoUri = 'geo:0,0?q=' + encodeURIComponent(address);
+
+      const link = document.getElementById('geoLink');
+
+      // Set href to the Google Maps web URL as a fallback
+      link.href = mapsWebUrl;
+
+      // When clicked, attempt to open the geo: URI first (native maps on mobile).
+      // If that fails (e.g., on desktop), fallback to opening Google Maps web URL.
+      link.addEventListener('click', function (e) {
+        // Try to open geo: URI in a way that works on many mobile browsers.
+        // We open the geo: URI in the current tab, then after a short delay open the web URL in a new tab.
+        // This gives native map apps a chance to handle the geo: URI on mobile.
+        e.preventDefault();
+
+        // Attempt to open geo: URI
+        const now = Date.now();
+        // Create a temporary iframe for older Android browsers
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = geoUri;
+        document.body.appendChild(iframe);
+
+        // After a short delay, open Google Maps web URL in a new tab/window as fallback
+        setTimeout(function () {
+          // Clean up iframe
+          document.body.removeChild(iframe);
+          // Open Google Maps web URL in a new tab
+          window.open(mapsWebUrl, '_blank', 'noopener');
+        }, 700);
+      }, { passive: false });
+    })();
+  </script>
+</body>
+</html>
